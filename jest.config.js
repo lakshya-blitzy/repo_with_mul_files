@@ -68,4 +68,24 @@ module.exports = {
   // 30-second per-test timeout to accommodate slow CI environments and
   // the spawn-based integration tests that wait for OS signal handling.
   testTimeout: 30000,
+
+  // Force sequential execution of test files (single Jest worker).
+  // Required because tests/integration/server.lifecycle.test.js and
+  // tests/integration/server.errors.test.js both spawn server.js as
+  // a child process binding 127.0.0.1:3000. Without sequential
+  // execution, Jest's default worker pool runs the two files in
+  // parallel, producing intermittent EADDRINUSE-induced test
+  // failures as the two workers race for the single bindable port.
+  //
+  // This setting is equivalent to passing the `--runInBand` CLI flag
+  // and is preferred here so that the standard `npm test` invocation
+  // (which is `jest --watchAll=false --ci` per AAP Section 0.9.1)
+  // produces deterministic results without requiring users or CI
+  // pipelines to remember the extra flag.
+  //
+  // Performance impact: unit tests now run sequentially as well,
+  // adding ~150ms total overhead. Total `npm test` wall time is
+  // ~7-9 seconds, well within the 60-second target from AAP
+  // Section 0.7.2.
+  maxWorkers: 1,
 };
