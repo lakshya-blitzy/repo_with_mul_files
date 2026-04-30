@@ -1,0 +1,14 @@
+# Node.js dependencies
+node_modules/
+
+# Jest coverage reports
+coverage/
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+
+# Environment configuration
+.env*
